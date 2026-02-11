@@ -9,14 +9,14 @@
             font-family: 'Segoe UI', Arial, sans-serif;
             margin: 0;
             color: white;
-            background-color: #002c5f;
+            background-color: #002c5f; /* Темно-синий Политех */
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        /* ОКНО ПАРОЛЯ */
+        /* ЭКРАН ПАРОЛЯ */
         #password-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -29,133 +29,132 @@
             color: #333; max-width: 350px; width: 90%; text-align: center;
             box-shadow: 0 15px 35px rgba(0,0,0,0.4);
         }
-        .polytech-logo { width: 100px; margin-bottom: 15px; }
+        .login-card input { 
+            width: 100%; padding: 12px; margin: 20px 0; 
+            border: 2px solid #eee; border-radius: 10px; font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .login-card button { 
+            background: #e30613; color: white; border: none; 
+            padding: 12px; border-radius: 10px; cursor: pointer; 
+            width: 100%; font-weight: bold; font-size: 1rem;
+        }
 
-        /* КОНТЕНТ */
+        /* КОНТЕЙНЕР ДЛЯ КАРТОЧЕК (В СТРОКУ) */
         #content {
-            display: none;
+            display: none; /* Скрыто до ввода пароля */
             flex-wrap: wrap;
             justify-content: center;
-            gap: 20px;
+            gap: 25px;
             padding: 40px 20px;
             width: 100%;
-            max-width: 1400px;
+            max-width: 1200px;
         }
 
         .card {
             background: rgba(255, 255, 255, 0.1);
-            padding: 25px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 25px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             width: 300px;
-            transition: 0.3s;
+            text-align: center;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
-        .card:hover { transform: translateY(-10px); background: rgba(255, 255, 255, 0.15); }
-
-        /* ПРОГРЕСС-БАР */
-        .progress-container {
-            background: rgba(255,255,255,0.2);
-            border-radius: 10px;
-            height: 10px;
-            margin: 15px 0;
-            overflow: hidden;
-        }
-        #progress-fill {
-            background: #4caf50;
-            width: 0%;
-            height: 100%;
-            transition: 0.5s;
+        .card:hover { 
+            transform: translateY(-15px); 
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #e30613;
         }
 
-        /* СПИСОК ЦЕЛЕЙ */
-        .goals-list { text-align: left; padding: 0; list-style: none; }
-        .goals-list li { margin: 12px 0; font-size: 0.9rem; display: flex; align-items: center; }
-        .goals-list input { margin-right: 12px; transform: scale(1.2); cursor: pointer; accent-color: #e30613; }
+        .card h2 { font-size: 1.5rem; margin-top: 0; color: #fff; }
+        .card p { font-size: 0.95rem; opacity: 0.8; line-height: 1.6; }
+        
+        /* Списки в карточке расписания */
+        .schedule-list { text-align: left; padding: 0; list-style: none; font-size: 0.9rem; }
+        .schedule-list li { margin-bottom: 8px; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .schedule-list li b { color: #ffeb3b; }
 
         .btn {
-            display: block; text-align: center; margin-top: 15px; padding: 10px;
-            background: #fff; color: #002c5f; text-decoration: none; border-radius: 10px; font-weight: bold;
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #fff;
+            color: #002c5f;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 0.9rem;
         }
-        .red { background: #e30613 !important; color: white !important; }
+        .card-red { background: linear-gradient(135deg, #e30613 0%, #900 100%); }
     </style>
 </head>
 <body>
 
+    <!-- ВХОД -->
     <div id="password-screen">
         <div class="login-card">
-            <img src="https://mospolytech.ru" class="polytech-logo">
-            <h3 style="color: #002c5f; margin: 0;">Личный кабинет</h3>
-            <input type="password" id="pass-input" style="width:100%; padding:10px; margin:15px 0; border:1px solid #ddd; border-radius:5px;" placeholder="Пароль: 190407">
-            <button onclick="checkPass()" style="width:100%; padding:10px; background:#e30613; color:white; border:none; border-radius:5px; cursor:pointer;">Войти</button>
+            <div style="font-weight: bold; color: #e30613; font-size: 1.2rem; margin-bottom: 10px;">МОСКОВСКИЙ ПОЛИТЕХ</div>
+            <h3 style="margin: 0; color: #002c5f;">Личный кабинет 251-952</h3>
+            <input type="password" id="pass-input" placeholder="Введите пароль">
+            <button onclick="checkPass()">Войти</button>
+            <p id="error-msg" style="color: red; display: none; font-size: 0.8rem; margin-top: 10px;">Неверный пароль!</p>
         </div>
     </div>
 
+    <!-- САЙТ -->
     <div id="content">
-        <!-- ЦЕЛИ НА СЕМЕСТР -->
-        <div class="card" style="border: 2px solid #e30613; width: 350px;">
-            <h2 style="margin-top:0; color:#e30613;">🎯 Цели на семестр</h2>
-            <div style="font-size: 0.8rem; margin-bottom: 5px;">Прогресс семестра: <span id="percent">0%</span></div>
-            <div class="progress-container">
-                <div id="progress-fill"></div>
-            </div>
-            <ul class="goals-list">
-                <li><input type="checkbox" class="goal-cb"> Закрыть сессию без троек</li>
-                <li><input type="checkbox" class="goal-cb"> Сдать все лабы по веб-дизайну</li>
-                <li><input type="checkbox" class="goal-cb"> Изучить основы JavaScript</li>
-                <li><input type="checkbox" class="goal-cb"> Ни одного пропуска без причины</li>
-                <li><input type="checkbox" class="goal-cb"> Минимум 2 проекта на GitHub</li>
+        
+        <!-- 1. ПРОФИЛЬ -->
+        <div class="card">
+            <div style="font-size: 3rem; margin-bottom: 10px;">👨‍💻</div>
+            <h2>Мой Профиль</h2>
+            <p>Добро пожаловать на мой первый сайт. Здесь я собираю полезные ссылки для нашей учебы.</p>
+            <a href="#" class="btn">Настройки</a>
+        </div>
+
+        <!-- 2. ГРУППА -->
+        <div class="card card-red">
+            <div style="font-size: 3rem; margin-bottom: 10px;">🎓</div>
+            <h2>Группа 251-952</h2>
+            <p>Мы — студенты Московского Политеха. Наше направление: информационные технологии.</p>
+            <a href="https://mospolytech.ru" target="_blank" class="btn" style="color: #e30613;">Сайт Политеха</a>
+        </div>
+
+        <!-- 3. РАСПИСАНИЕ -->
+        <div class="card">
+            <div style="font-size: 3rem; margin-bottom: 10px;">📅</div>
+            <h2>Важные пары</h2>
+            <ul class="schedule-list">
+                <li><b>Пн:</b> Веб-технологии</li>
+                <li><b>Вт:</b> Высшая математика</li>
+                <li><b>Ср:</b> Программирование</li>
+                <li><b>Чт:</b> Иностранный язык</li>
             </ul>
+            <a href="#" class="btn">Полное расписание</a>
         </div>
 
-        <!-- ГРУППА -->
-        <div class="card">
-            <h2 style="margin-top:0;">🎓 251-952</h2>
-            <p>Направление: Информационные технологии.</p>
-            <p>Университет: Московский Политех.</p>
-            <a href="https://mospolytech.ru" target="_blank" class="btn red">Сайт Политеха</a>
-        </div>
-
-        <!-- ПРОФИЛЬ -->
-        <div class="card">
-            <h2 style="margin-top:0;">👨‍💻 Профиль</h2>
-            <p>Статус: В процессе обучения</p>
-            <p>Навыки: HTML, CSS, GitHub</p>
-            <a href="#" class="btn">Изменить данные</a>
-        </div>
     </div>
 
     <script>
-        // Функция проверки пароля
         function checkPass() {
-            if (document.getElementById("pass-input").value === "190407") {
+            var input = document.getElementById("pass-input").value;
+            if (input === "190407") {
                 document.getElementById("password-screen").style.display = "none";
                 document.getElementById("content").style.display = "flex";
-                updateProgress(); // Обновить прогресс при входе
-            } else { alert("Неверный пароль!"); }
+            } else {
+                document.getElementById("error-msg").style.display = "block";
+            }
         }
-
-        // Функция обновления прогресса
-        const checkboxes = document.querySelectorAll('.goal-cb');
-        checkboxes.forEach(cb => {
-            cb.addEventListener('change', updateProgress);
-        });
-
-        function updateProgress() {
-            const total = checkboxes.length;
-            const checked = document.querySelectorAll('.goal-cb:checked').length;
-            const percentage = Math.round((checked / total) * 100);
-            
-            document.getElementById('progress-fill').style.width = percentage + '%';
-            document.getElementById('percent').innerText = percentage + '%';
-        }
-
         document.getElementById("pass-input").addEventListener("keyup", function(e) {
             if (e.key === "Enter") checkPass();
         });
     </script>
+
 </body>
 </html>
+
 
 
 
