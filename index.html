@@ -55,6 +55,17 @@
 </head>
 <body>
 
+    <!-- СКРИПТ ПАРОЛЯ -->
+    <script>
+      (function() {
+        var pass = prompt("Введите пароль для доступа к сайту группы 251-952:");
+        if (pass !== "190407") {
+          alert("Доступ запрещен!");
+          window.location.href = "https://google.com"; 
+        }
+      })();
+    </script>
+
     <!-- ПЕРВЫЙ СЛАЙД (Ваш оригинал) -->
     <section class="slide-1">
         <div class="card">
