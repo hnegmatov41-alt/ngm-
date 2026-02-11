@@ -9,7 +9,7 @@
             font-family: 'Segoe UI', Arial, sans-serif;
             margin: 0;
             color: white;
-            background-color: #002c5f; /* Темно-синий Политех */
+            background-color: #002c5f;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -29,6 +29,13 @@
             color: #333; max-width: 350px; width: 90%; text-align: center;
             box-shadow: 0 15px 35px rgba(0,0,0,0.4);
         }
+        
+        /* СТИЛЬ ЛОГОТИПА */
+        .polytech-logo {
+            width: 120px; /* Размер логотипа */
+            margin-bottom: 15px;
+        }
+
         .login-card input { 
             width: 100%; padding: 12px; margin: 20px 0; 
             border: 2px solid #eee; border-radius: 10px; font-size: 1rem;
@@ -40,9 +47,9 @@
             width: 100%; font-weight: bold; font-size: 1rem;
         }
 
-        /* КОНТЕЙНЕР ДЛЯ КАРТОЧЕК (В СТРОКУ) */
+        /* КОНТЕНТ */
         #content {
-            display: none; /* Скрыто до ввода пароля */
+            display: none;
             flex-wrap: wrap;
             justify-content: center;
             gap: 25px;
@@ -60,22 +67,8 @@
             width: 300px;
             text-align: center;
             transition: all 0.4s ease;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
-        .card:hover { 
-            transform: translateY(-15px); 
-            background: rgba(255, 255, 255, 0.2);
-            border-color: #e30613;
-        }
-
-        .card h2 { font-size: 1.5rem; margin-top: 0; color: #fff; }
-        .card p { font-size: 0.95rem; opacity: 0.8; line-height: 1.6; }
-        
-        /* Списки в карточке расписания */
-        .schedule-list { text-align: left; padding: 0; list-style: none; font-size: 0.9rem; }
-        .schedule-list li { margin-bottom: 8px; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .schedule-list li b { color: #ffeb3b; }
-
+        .card:hover { transform: translateY(-15px); border-color: #e30613; }
         .btn {
             display: inline-block;
             margin-top: 20px;
@@ -85,56 +78,49 @@
             text-decoration: none;
             border-radius: 12px;
             font-weight: bold;
-            font-size: 0.9rem;
         }
         .card-red { background: linear-gradient(135deg, #e30613 0%, #900 100%); }
     </style>
 </head>
 <body>
 
-    <!-- ВХОД -->
+    <!-- ВХОД С ЛОГОТИПОМ -->
     <div id="password-screen">
         <div class="login-card">
-            <div style="font-weight: bold; color: #e30613; font-size: 1.2rem; margin-bottom: 10px;">МОСКОВСКИЙ ПОЛИТЕХ</div>
-            <h3 style="margin: 0; color: #002c5f;">Личный кабинет 251-952</h3>
+            <!-- Логотип Московского Политеха -->
+            <img src="https://mospolytech.ru" alt="Логотип Политех" class="polytech-logo">
+            
+            <div style="font-weight: bold; color: #e30613; font-size: 1rem; letter-spacing: 1px;">МОСКОВСКИЙ ПОЛИТЕХ</div>
+            <h3 style="margin: 5px 0 0 0; color: #002c5f;">Личный кабинет 251-952</h3>
+            
             <input type="password" id="pass-input" placeholder="Введите пароль">
             <button onclick="checkPass()">Войти</button>
             <p id="error-msg" style="color: red; display: none; font-size: 0.8rem; margin-top: 10px;">Неверный пароль!</p>
         </div>
     </div>
 
-    <!-- САЙТ -->
+    <!-- САЙТ (Появляется после пароля) -->
     <div id="content">
-        
-        <!-- 1. ПРОФИЛЬ -->
         <div class="card">
-            <div style="font-size: 3rem; margin-bottom: 10px;">👨‍💻</div>
+            <div style="font-size: 3rem;">👨‍💻</div>
             <h2>Мой Профиль</h2>
-            <p>Добро пожаловать на мой первый сайт. Здесь я собираю полезные ссылки для нашей учебы.</p>
+            <p>Первый проект на GitHub Pages.</p>
             <a href="#" class="btn">Настройки</a>
         </div>
 
-        <!-- 2. ГРУППА -->
         <div class="card card-red">
-            <div style="font-size: 3rem; margin-bottom: 10px;">🎓</div>
+            <div style="font-size: 3rem;">🎓</div>
             <h2>Группа 251-952</h2>
-            <p>Мы — студенты Московского Политеха. Наше направление: информационные технологии.</p>
+            <p>Информационные технологии в Политехе.</p>
             <a href="https://mospolytech.ru" target="_blank" class="btn" style="color: #e30613;">Сайт Политеха</a>
         </div>
 
-        <!-- 3. РАСПИСАНИЕ -->
         <div class="card">
-            <div style="font-size: 3rem; margin-bottom: 10px;">📅</div>
-            <h2>Важные пары</h2>
-            <ul class="schedule-list">
-                <li><b>Пн:</b> Веб-технологии</li>
-                <li><b>Вт:</b> Высшая математика</li>
-                <li><b>Ср:</b> Программирование</li>
-                <li><b>Чт:</b> Иностранный язык</li>
-            </ul>
-            <a href="#" class="btn">Полное расписание</a>
+            <div style="font-size: 3rem;">📅</div>
+            <h2>Расписание</h2>
+            <p>Здесь скоро появятся важные пары.</p>
+            <a href="#" class="btn">Открыть</a>
         </div>
-
     </div>
 
     <script>
@@ -154,4 +140,5 @@
 
 </body>
 </html>
+
 
