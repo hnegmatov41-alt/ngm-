@@ -3,97 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Моя страница и Группа 251-952</title>
+    <title>Московский Политех | Группа 251-952</title>
     <style>
-        html { scroll-behavior: smooth; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             margin: 0;
             color: white;
-            overflow: hidden; /* Скрываем прокрутку, пока нет пароля */
-        }
-
-        /* ЭКРАН ПАРОЛЯ В СТИЛЕ МОСКОВСКОГО ПОЛИТЕХА */
-        #password-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #002c5f 0%, #e30613 100%); /* Цвета Политеха */
+            background-color: #002c5f; /* Темно-синий Политех */
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 9999;
-            text-align: center;
         }
-        .login-card {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            color: #333;
-            max-width: 320px;
-            width: 90%;
-        }
-        .login-card h2 { color: #002c5f; margin-bottom: 20px; }
-        .login-card input {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 1rem;
-        }
-        .login-card button {
-            background: #e30613;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            width: 100%;
-        }
-        .login-card button:hover { background: #b3050f; }
 
-        /* Остальные ваши стили */
-        section { height: 100vh; display: flex; justify-content: center; align-items: center; text-align: center; }
-        .slide-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .slide-2 { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
+        /* ЭКРАН ПАРОЛЯ */
+        #password-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #002c5f 0%, #e30613 100%);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999;
+        }
+        .login-card { 
+            background: white; padding: 40px; border-radius: 20px; 
+            color: #333; max-width: 350px; width: 90%; text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+        .login-card input { 
+            width: 100%; padding: 12px; margin: 20px 0; 
+            border: 2px solid #eee; border-radius: 10px; font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .login-card button { 
+            background: #e30613; color: white; border: none; 
+            padding: 12px; border-radius: 10px; cursor: pointer; 
+            width: 100%; font-weight: bold; font-size: 1rem;
+        }
+
+        /* КОНТЕЙНЕР ДЛЯ КАРТОЧЕК (В СТРОКУ) */
+        #content {
+            display: none; /* Скрыто до ввода пароля */
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+            padding: 40px 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
         .card {
             background: rgba(255, 255, 255, 0.1);
-            padding: 2rem;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            max-width: 400px;
+            padding: 30px;
+            border-radius: 25px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 300px;
+            text-align: center;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
-        h1 { margin: 0; font-size: 2.5rem; }
-        p { font-size: 1.2rem; opacity: 0.9; }
+        .card:hover { 
+            transform: translateY(-15px); 
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #e30613;
+        }
+
+        .card h2 { font-size: 1.5rem; margin-top: 0; color: #fff; }
+        .card p { font-size: 0.95rem; opacity: 0.8; line-height: 1.6; }
+        
+        /* Списки в карточке расписания */
+        .schedule-list { text-align: left; padding: 0; list-style: none; font-size: 0.9rem; }
+        .schedule-list li { margin-bottom: 8px; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .schedule-list li b { color: #ffeb3b; }
+
         .btn {
             display: inline-block;
             margin-top: 20px;
-            padding: 10px 25px;
+            padding: 10px 20px;
             background: #fff;
-            color: #764ba2;
+            color: #002c5f;
             text-decoration: none;
-            border-radius: 50px;
+            border-radius: 12px;
             font-weight: bold;
-            transition: 0.3s;
+            font-size: 0.9rem;
         }
+        .card-red { background: linear-gradient(135deg, #e30613 0%, #900 100%); }
     </style>
 </head>
 <body>
 
-    <!-- ОКНО ВХОДА -->
+    <!-- ВХОД -->
     <div id="password-screen">
         <div class="login-card">
-            <img src="https://mospolytech.ru" alt="Московский Политех" style="width: 100%; margin-bottom: 20px;">
-            <h2>Вход для Группы 251-952</h2>
+            <div style="font-weight: bold; color: #e30613; font-size: 1.2rem; margin-bottom: 10px;">МОСКОВСКИЙ ПОЛИТЕХ</div>
+            <h3 style="margin: 0; color: #002c5f;">Личный кабинет 251-952</h3>
             <input type="password" id="pass-input" placeholder="Введите пароль">
             <button onclick="checkPass()">Войти</button>
-            <p id="error-msg" style="color: red; font-size: 0.8rem; display: none; margin-top: 10px;">Неверный пароль!</p>
+            <p id="error-msg" style="color: red; display: none; font-size: 0.8rem; margin-top: 10px;">Неверный пароль!</p>
         </div>
+    </div>
+
+    <!-- САЙТ -->
+    <div id="content">
+        
+        <!-- 1. ПРОФИЛЬ -->
+        <div class="card">
+            <div style="font-size: 3rem; margin-bottom: 10px;">👨‍💻</div>
+            <h2>Мой Профиль</h2>
+            <p>Добро пожаловать на мой первый сайт. Здесь я собираю полезные ссылки для нашей учебы.</p>
+            <a href="#" class="btn">Настройки</a>
+        </div>
+
+        <!-- 2. ГРУППА -->
+        <div class="card card-red">
+            <div style="font-size: 3rem; margin-bottom: 10px;">🎓</div>
+            <h2>Группа 251-952</h2>
+            <p>Мы — студенты Московского Политеха. Наше направление: информационные технологии.</p>
+            <a href="https://mospolytech.ru" target="_blank" class="btn" style="color: #e30613;">Сайт Политеха</a>
+        </div>
+
+        <!-- 3. РАСПИСАНИЕ -->
+        <div class="card">
+            <div style="font-size: 3rem; margin-bottom: 10px;">📅</div>
+            <h2>Важные пары</h2>
+            <ul class="schedule-list">
+                <li><b>Пн:</b> Веб-технологии</li>
+                <li><b>Вт:</b> Высшая математика</li>
+                <li><b>Ср:</b> Программирование</li>
+                <li><b>Чт:</b> Иностранный язык</li>
+            </ul>
+            <a href="#" class="btn">Полное расписание</a>
+        </div>
+
     </div>
 
     <script>
@@ -101,33 +142,15 @@
             var input = document.getElementById("pass-input").value;
             if (input === "190407") {
                 document.getElementById("password-screen").style.display = "none";
-                document.body.style.overflow = "auto"; // Разрешаем прокрутку
+                document.getElementById("content").style.display = "flex";
             } else {
                 document.getElementById("error-msg").style.display = "block";
             }
         }
-        // Вход по нажатию Enter
-        document.getElementById("pass-input").addEventListener("keyup", function(event) {
-            if (event.key === "Enter") { checkPass(); }
+        document.getElementById("pass-input").addEventListener("keyup", function(e) {
+            if (e.key === "Enter") checkPass();
         });
     </script>
-
-    <!-- ОСНОВНОЙ КОНТЕНТ САЙТА -->
-    <section class="slide-1">
-        <div class="card">
-            <h1>Привет! Я на связи 🚀</h1>
-            <p>Это мой первый сайт, созданный на GitHub Pages.</p>
-            <a href="#students" class="btn">Группа 251-952 ↓</a>
-        </div>
-    </section>
-
-    <section id="students" class="slide-2">
-        <div class="card">
-            <h1>Студенты 251-952</h1>
-            <p>Мы учимся создавать сайты и работать с GitHub!</p>
-            <a href="https://github.com" class="btn">Наш GitHub</a>
-        </div>
-    </section>
 
 </body>
 </html>
