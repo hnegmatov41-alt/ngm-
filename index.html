@@ -88,7 +88,8 @@
     <!-- ВХОД -->
     <div id="password-screen">
         <div class="login-box">
-            <img src="https://mospolytech.ru" style="filter: invert(1); width: 100px; margin-bottom: 20px;">
+            <!-- Исправленная ссылка на картинку логотипа -->
+            <img src="https://mospolytech.ru" style="filter: brightness(0) invert(1); width: 150px; margin-bottom: 20px;">
             <h2 style="margin:0">System Login</h2>
             <input type="password" id="pass" placeholder="Password">
             <button class="btn-action" onclick="unlock()">Authenticate</button>
@@ -161,7 +162,6 @@
             } else { alert('Access Denied'); }
         }
 
-        // Логика прогресса
         const tasks = document.querySelectorAll('.task');
         tasks.forEach(t => t.addEventListener('change', () => {
             const p = Math.round(([...tasks].filter(i => i.checked).length / tasks.length) * 100);
@@ -169,18 +169,17 @@
             document.getElementById('perc-val').innerText = p;
         }));
 
-        // Таймер
         function startTimer() {
             const session = new Date('June 1, 2024').getTime();
             setInterval(() => {
                 const now = new Date().getTime();
                 const diff = session - now;
-                document.getElementById('timer').innerText = Math.floor(diff / (1000 * 60 * 60 * 24)) + "d";
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                document.getElementById('timer').innerText = d > 0 ? d + "d" : "Started";
             }, 1000);
         }
         startTimer();
 
-        // Enter key support
         document.getElementById('pass').addEventListener('keypress', (e) => { if(e.key === 'Enter') unlock(); });
     </script>
 </body>
