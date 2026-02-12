@@ -4,39 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Polytech OS | Группа 251-952</title>
+    <link rel="icon" href="https://mospolytech.ru" type="image/x-icon">
     <style>
         :root {
             --bg: #0b0e14;
             --card-bg: rgba(23, 27, 34, 0.8);
             --accent: #e30613;
             --text: #e6edf3;
+            --green: #4caf50;
+            --yellow: #ffeb3b;
         }
         body { font-family: 'Inter', sans-serif; margin: 0; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; overflow-x: hidden; }
+        
+        /* ЭКРАН ПАРОЛЯ */
         #password-screen { position: fixed; inset: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 10000; transition: 0.6s; }
         .login-box { background: var(--card-bg); padding: 40px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); text-align: center; width: 320px; }
-        #main-ui { display: none; width: 100%; height: 100vh; }
+        
+        #main-ui { display: none; width: 100%; }
         .sidebar { width: 260px; background: rgba(13, 17, 23, 0.9); border-right: 1px solid rgba(255,255,255,0.05); padding: 30px 20px; display: flex; flex-direction: column; }
         .dashboard { flex: 1; padding: 40px; overflow-y: auto; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
-        .glass-card { background: var(--card-bg); border-radius: 20px; padding: 25px; border: 1px solid rgba(255,255,255,0.05); }
-        .tag { font-size: 11px; text-transform: uppercase; color: var(--accent); font-weight: bold; }
         
-        /* СТИЛИ РАСПИСАНИЯ */
-        .sch-item { display: flex; justify-content: space-between; padding: 12px; border-radius: 12px; margin-bottom: 8px; font-size: 13px; background: rgba(255,255,255,0.03); border: 1px solid transparent; }
-        .current-para { background: var(--accent) !important; border-color: #ffeb3b; box-shadow: 0 0 15px rgba(227, 6, 19, 0.4); font-weight: bold; }
-        .time-label { color: #ffeb3b; font-weight: bold; margin-left: 10px; min-width: 85px; text-align: right; }
-        .day-title { color: var(--accent); margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; }
+        /* СЕТКА КАРТОЧЕК */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .glass-card { background: var(--card-bg); border-radius: 20px; padding: 25px; border: 1px solid rgba(255,255,255,0.05); height: fit-content; }
+        .full-width { grid-column: 1 / -1; }
 
-        .btn-action { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; width: 100%; font-weight: 600; margin-top: 10px; }
-        input { background: #0d1117; border: 1px solid #30363d; color: white; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; }
+        .tag { font-size: 11px; text-transform: uppercase; color: var(--accent); font-weight: bold; letter-spacing: 1px; }
+        
+        /* РАСПИСАНИЕ */
+        .week-container { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; margin-top: 15px; }
+        .day-column { min-width: 250px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        .day-name { color: var(--yellow); font-weight: bold; margin-bottom: 10px; display: block; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sch-item { display: flex; justify-content: space-between; padding: 8px; border-radius: 8px; margin-bottom: 5px; font-size: 12px; background: rgba(255,255,255,0.03); }
+        .current-para { background: var(--accent) !important; box-shadow: 0 0 10px var(--accent); font-weight: bold; }
+        .today-day { border-color: var(--yellow); background: rgba(255, 235, 59, 0.05); }
+
+        /* ПРОГРЕСС И КНОПКИ */
+        .progress-track { height: 6px; background: #21262d; border-radius: 3px; margin: 10px 0; overflow: hidden; }
+        .progress-bar { height: 100%; background: var(--accent); width: 0%; transition: 1s; }
+        .btn-action { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: 600; margin-top: 10px; }
+        input { background: #0d1117; border: 1px solid #30363d; color: white; padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box; }
+        .counter-btn { background: #21262d; color: white; border: none; width: 30px; height: 30px; border-radius: 5px; cursor: pointer; }
+
+        @media (max-width: 768px) { body { flex-direction: column; } .sidebar { width: 100%; } .grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
     <div id="password-screen">
         <div class="login-box">
-            <img src="https://mospolytech.ru" style="filter: brightness(0) invert(1); width: 150px; margin-bottom: 20px;">
-            <input type="password" id="pass" placeholder="Пароль">
+            <img src="https://mospolytech.ru" style="filter: brightness(0) invert(1); width: 130px; margin-bottom: 20px;">
+            <input type="password" id="pass" placeholder="Пароль: 190407">
             <button class="btn-action" onclick="unlock()">Войти</button>
         </div>
     </div>
@@ -45,117 +63,143 @@
         <aside class="sidebar">
             <div class="tag">University OS</div>
             <h2>Политех <span style="color:var(--accent)">ИТ</span></h2>
-            <nav style="margin-top: 30px; display:flex; flex-direction:column; gap:15px;">
-                <div style="color:var(--accent); font-weight:bold;">● Сегодня</div>
-                <div style="opacity:0.5">○ Все расписание</div>
+            <nav style="display:flex; flex-direction:column; gap:12px; opacity:0.7;">
+                <div>● Личный кабинет</div>
+                <div>○ Проекты группы</div>
             </nav>
         </aside>
 
         <main class="dashboard">
-            <h1>Кабинет 251-952</h1>
+            <h1>Кабинет студента 251-952</h1>
+            
             <div class="grid">
-                
-                <!-- КАРТОЧКА РАСПИСАНИЯ -->
-                <div class="glass-card" style="grid-column: span 1;">
-                    <span class="tag">Учебный план</span>
-                    <h3 id="display-day" class="day-title">Загрузка...</h3>
-                    <div id="schedule-list">
-                        <!-- Сюда скрипт вставит пары -->
+                <!-- 1. ВСЕ РАСПИСАНИЕ (НА ВЕСЬ ЭКРАН) -->
+                <div class="glass-card full-width">
+                    <span class="tag">Учебный план на неделю</span>
+                    <div class="week-container" id="week-schedule">
+                        <!-- Заполнится скриптом -->
                     </div>
                 </div>
 
-                <!-- ТАЙМЕР СЕССИИ -->
+                <!-- 2. ЗАДАЧИ -->
                 <div class="glass-card">
-                    <span class="tag">Дедлайн</span>
-                    <h3>До 01.06.2026</h3>
-                    <div id="timer" style="font-size: 24px; font-weight: 800; color:var(--accent); margin:15px 0;">...</div>
-                    <a href="https://lk.mospolytech.ru" target="_blank" class="btn-action">Личный кабинет Политеха</a>
+                    <span class="tag">Трекер</span>
+                    <h3>Задачи (<span id="perc-val">0</span>%)</h3>
+                    <div class="progress-track"><div class="progress-bar" id="fill"></div></div>
+                    <div id="task-list">
+                        <label style="display:flex; gap:8px; font-size:13px; margin-bottom:5px;"><input type="checkbox" class="task" onchange="updateProgress()"> Веб-технологии</label>
+                        <label style="display:flex; gap:8px; font-size:13px; margin-bottom:5px;"><input type="checkbox" class="task" onchange="updateProgress()"> Программирование</label>
+                    </div>
+                    <input type="text" id="new-task" placeholder="Новая задача..." style="margin-top:10px;">
+                    <button class="btn-action" onclick="addTask()">Добавить</button>
                 </div>
 
+                <!-- 3. ПОСЕЩЕНИЕ -->
+                <div class="glass-card">
+                    <span class="tag">Дисциплина</span>
+                    <h3>Пропуски занятий</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                        <span>Количество: <b id="m-count" style="color:var(--accent)">0</b></span>
+                        <div style="display: flex; gap: 5px;">
+                            <button class="counter-btn" onclick="changeM(-1)">-</button>
+                            <button class="counter-btn" onclick="changeM(1)">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. ТАЙМЕР -->
+                <div class="glass-card">
+                    <span class="tag">Обратный отсчет</span>
+                    <h3>До 01.06.2026</h3>
+                    <div id="timer" style="font-size: 20px; font-weight: bold; color:var(--accent); margin:15px 0;">...</div>
+                    <a href="https://lk.mospolytech.ru" target="_blank" class="btn-action">Перейти в ЛК</a>
+                </div>
             </div>
         </main>
     </div>
 
     <script>
-        const fullSchedule = {
-            1: { name: "Понедельник", pairs: [{t: "12:20-13:50", n: "Проектная деятельность (Пр)"}] },
-            2: { name: "Вторник", pairs: [
-                {t: "09:00-10:30", n: "Языки программирования (Лаб)"},
-                {t: "10:40-12:10", n: "Языки программирования (Лаб)"},
-                {t: "12:20-13:50", n: "Иностранный язык (Пр)"}
-            ]},
-            3: { name: "Среда", pairs: [
-                {t: "09:00-10:30", n: "Мат. анализ (Лек)"},
-                {t: "10:40-12:10", n: "Теория вероятностей (Пр)"},
-                {t: "12:20-13:50", n: "Мат. анализ (Пр)"}
-            ]},
-            4: { name: "Четверг", pairs: [
-                {t: "10:40-12:10", n: "Технологии программирования (Лаб)"},
-                {t: "12:20-13:50", n: "Сети / БД (Лаб)"},
-                {t: "14:30-16:00", n: "Сети / БД (Лаб)"}
-            ]},
-            5: { name: "Пятница", pairs: [
-                {t: "09:00-10:30", n: "Технологии программирования (Лек)"},
-                {t: "10:40-12:10", n: "Тех. тексты и документация (Лек)"},
-                {t: "12:20-13:50", n: "Теория вероятностей (Лек)"},
-                {t: "14:30-16:00", n: "Языки программирования (Лек)"}
-            ]},
-            6: { name: "Суббота", pairs: [
-                {t: "10:40-12:10", n: "Физкультура (Пр)"},
-                {t: "12:20-13:50", n: "Базы данных (Лек)"},
-                {t: "14:30-16:00", n: "Сети и системы передачи (Лек)"}
-            ]},
-            0: { name: "Воскресенье", pairs: [{t: "00:00-23:59", n: "Выходной 😇"}] }
+        const weekData = {
+            1: { n: "Пн", p: [{t: "12:20-13:50", n: "Проектная деят. (Пр)"}] },
+            2: { n: "Вт", p: [{t: "09:00-10:30", n: "Языки прогр. (Лаб)"},{t: "10:40-12:10", n: "Языки прогр. (Лаб)"},{t: "12:20-13:50", n: "Иностр. язык (Пр)"}] },
+            3: { n: "Ср", p: [{t: "09:00-10:30", n: "Мат. анализ (Лек)"},{t: "10:40-12:10", n: "Теор. вероятн. (Пр)"},{t: "12:20-13:50", n: "Мат. анализ (Пр)"}] },
+            4: { n: "Чт", p: [{t: "10:40-12:10", n: "Технол. прогр. (Лаб)"},{t: "12:20-13:50", n: "Сети / БД (Лаб)"},{t: "14:30-16:00", n: "Сети / БД (Лаб)"}] },
+            5: { n: "Пт", p: [{t: "09:00-10:30", n: "Технол. прогр. (Лек)"},{t: "10:40-12:10", n: "Тех. тексты (Лек)"},{t: "12:20-13:50", n: "Теор. вероятн. (Лек)"},{t: "14:30-16:00", n: "Языки прогр. (Лек)"}] },
+            6: { n: "Сб", p: [{t: "10:40-12:10", n: "Физкультура (Пр)"},{t: "12:20-13:50", n: "Базы данных (Лек)"},{t: "14:30-16:00", n: "Сети и системы (Лек)"}] }
         };
+
+        let missed = 0;
 
         function unlock() {
             if(document.getElementById('pass').value === '190407') {
                 document.getElementById('password-screen').style.display = 'none';
                 document.getElementById('main-ui').style.display = 'flex';
-                initDashboard();
-            } else { alert('Доступ закрыт!'); }
+                renderSchedule();
+                startTimer();
+            } else { alert('Пароль неверен'); }
         }
 
-        function initDashboard() {
+        function renderSchedule() {
+            const container = document.getElementById('week-schedule');
+            const today = new Date().getDay();
             const now = new Date();
-            const day = now.getDay();
-            const config = fullSchedule[day];
-            
-            document.getElementById('display-day').innerText = config.name;
-            const list = document.getElementById('schedule-list');
-            list.innerHTML = "";
+            const curMin = now.getHours() * 60 + now.getMinutes();
 
-            config.pairs.forEach(p => {
-                const item = document.createElement('div');
-                item.className = 'sch-item';
+            for (let i = 1; i <= 6; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'day-column' + (i === today ? ' today-day' : '');
+                let html = `<span class="day-name">${weekData[i].n}</span>`;
                 
-                // Проверка текущей пары
-                const [start, end] = p.t.split('-');
-                if (isCurrent(start, end)) item.classList.add('current-para');
+                weekData[i].p.forEach(pair => {
+                    const [s, e] = pair.t.split('-');
+                    const [sH, sM] = s.split(':').map(Number);
+                    const [eH, eM] = e.split(':').map(Number);
+                    const isCurrent = (i === today && curMin >= sH*60+sM && curMin <= eH*60+eM);
+                    
+                    html += `<div class="sch-item ${isCurrent ? 'current-para' : ''}">
+                                <span>${pair.n}</span>
+                                <span style="color:var(--yellow)">${pair.t}</span>
+                             </div>`;
+                });
+                dayDiv.innerHTML = html;
+                container.appendChild(dayDiv);
+            }
+        }
 
-                item.innerHTML = `<span>${p.n}</span><span class="time-label">${p.t}</span>`;
-                list.appendChild(item);
-            });
+        function updateProgress() {
+            const all = document.querySelectorAll('.task');
+            const checked = document.querySelectorAll('.task:checked');
+            const p = all.length > 0 ? Math.round((checked.length/all.length)*100) : 0;
+            document.getElementById('fill').style.width = p + '%';
+            document.getElementById('perc-val').innerText = p;
+        }
 
-            // Таймер сессии
+        function addTask() {
+            const val = document.getElementById('new-task').value;
+            if(!val) return;
+            const lbl = document.createElement('label');
+            lbl.style = "display:flex; gap:8px; font-size:13px; margin-bottom:5px;";
+            lbl.innerHTML = `<input type="checkbox" class="task" onchange="updateProgress()"> ${val}`;
+            document.getElementById('task-list').appendChild(lbl);
+            document.getElementById('new-task').value = "";
+            updateProgress();
+        }
+
+        function changeM(v) { missed = Math.max(0, missed + v); document.getElementById('m-count').innerText = missed; }
+
+        function startTimer() {
+            const target = new Date('June 1, 2026').getTime();
             setInterval(() => {
-                const diff = new Date('June 1, 2026') - new Date();
+                const diff = target - new Date().getTime();
                 const d = Math.floor(diff / (1000*60*60*24));
                 const m = Math.floor(d / 30.44);
                 document.getElementById('timer').innerText = `${m} мес. ${d % 30} дн.`;
             }, 1000);
         }
 
-        function isCurrent(start, end) {
-            const now = new Date();
-            const cur = now.getHours() * 60 + now.getMinutes();
-            const [sH, sM] = start.split(':').map(Number);
-            const [eH, eM] = end.split(':').map(Number);
-            return cur >= (sH * 60 + sM) && cur <= (eH * 60 + eM);
-        }
-
-        document.getElementById('pass').addEventListener('keypress', (e) => e.key==='Enter' && unlock());
+        document.getElementById('pass').onkeypress = (e) => e.key === 'Enter' && unlock();
     </script>
 </body>
 </html>
+
 
