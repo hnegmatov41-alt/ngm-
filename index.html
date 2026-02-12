@@ -4,39 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Система Политех | Группа 251-952</title>
-    <link rel="icon" href="https://mospolytech.ru" type="image/x-icon">
     <style>
         :root {
             --bg: #0b0e14;
             --card-bg: rgba(23, 27, 34, 0.8);
             --accent: #e30613;
-            --accent-glow: rgba(227, 6, 19, 0.3);
             --text: #e6edf3;
             --green: #4caf50;
         }
 
         body {
-            font-family: 'Inter', -apple-system, sans-serif;
+            font-family: 'Inter', sans-serif;
             margin: 0; background: var(--bg); color: var(--text);
             display: flex; min-height: 100vh; overflow-x: hidden;
         }
 
-        @keyframes pulse-red {
-            0% { box-shadow: 0 0 0 0 rgba(227, 6, 19, 0.7); }
-            70% { box-shadow: 0 0 20px 10px rgba(227, 6, 19, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(227, 6, 19, 0); }
-        }
-        .urgent { border-color: #ffeb3b !important; animation: pulse-red 2s infinite; }
-
         #password-screen {
             position: fixed; inset: 0; background: var(--bg);
             display: flex; justify-content: center; align-items: center;
-            z-index: 10000; transition: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10000; transition: 0.6s;
         }
+
         .login-box {
             background: var(--card-bg); padding: 40px; border-radius: 24px;
             border: 1px solid rgba(255,255,255,0.1); text-align: center; width: 320px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
         #main-ui { display: none; width: 100%; height: 100vh; }
@@ -47,10 +38,7 @@
             padding: 30px 20px; display: flex; flex-direction: column;
         }
 
-        .dashboard {
-            flex: 1; padding: 40px; overflow-y: auto;
-            background: radial-gradient(circle at top right, rgba(227,6,19,0.05), transparent);
-        }
+        .dashboard { flex: 1; padding: 40px; overflow-y: auto; }
 
         .grid {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -59,229 +47,147 @@
 
         .glass-card {
             background: var(--card-bg); border-radius: 20px; padding: 25px;
-            border: 1px solid rgba(255,255,255,0.05); transition: 0.3s;
+            border: 1px solid rgba(255,255,255,0.05);
         }
-        .glass-card:hover { border-color: var(--accent); }
-
-        .progress-track { height: 6px; background: #21262d; border-radius: 3px; margin: 15px 0; }
-        .progress-bar { height: 100%; background: var(--accent); border-radius: 3px; width: 0%; transition: 1s; }
 
         .btn-action {
             background: var(--accent); color: white; border: none; padding: 12px;
-            border-radius: 12px; cursor: pointer; width: 100%; font-weight: 600;
-            text-decoration: none; display: block; text-align: center; margin-top: 10px;
+            border-radius: 12px; cursor: pointer; width: 100%; font-weight: 600; margin-top: 10px;
         }
 
         .counter-btn {
-            background: #21262d; color: white; border: 1px solid #30363d;
-            width: 30px; height: 30px; border-radius: 5px; cursor: pointer; font-weight: bold;
+            background: #21262d; color: white; border: none;
+            width: 30px; height: 30px; border-radius: 5px; cursor: pointer;
         }
-        .counter-btn:hover { background: var(--accent); }
 
         input {
             background: #0d1117; border: 1px solid #30363d; color: white;
-            padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-bottom: 10px;
+            padding: 12px; border-radius: 8px; width: 100%; margin-bottom: 10px;
         }
 
-        .task-item { display: flex; gap: 10px; margin: 8px 0; font-size: 14px; align-items: center; }
-        .task-item input[type="checkbox"] { width: auto; margin: 0; cursor: pointer; accent-color: var(--accent); }
-
-        .tag { font-size: 11px; text-transform: uppercase; color: var(--accent); font-weight: bold; letter-spacing: 1px; }
-
-        #music-btn {
-            position: fixed; bottom: 20px; right: 20px; background: var(--card-bg);
-            border: 1px solid var(--accent); border-radius: 50%; width: 40px; height: 40px;
-            display: none; justify-content: center; align-items: center; cursor: pointer; z-index: 100;
-        }
+        .tag { font-size: 11px; text-transform: uppercase; color: var(--accent); font-weight: bold; }
+        
+        #timer { font-size: 22px; font-weight: 800; color: var(--accent); margin: 15px 0; line-height: 1.4; }
 
         .stat-circle {
             width: 80px; height: 80px; border-radius: 50%;
             border: 4px solid var(--green); display: flex;
             justify-content: center; align-items: center;
-            font-weight: bold; margin: 10px auto; color: var(--green); font-size: 1.2rem;
+            font-weight: bold; margin: 10px auto; color: var(--green);
         }
     </style>
 </head>
 <body>
 
-    <audio id="bg-music" loop>
-        <source src="https://www.soundhelix.com" type="audio/mpeg">
-    </audio>
-
-    <div id="music-btn" onclick="toggleMusic()">🎵</div>
-
     <div id="password-screen">
         <div class="login-box">
             <img src="https://mospolytech.ru" style="filter: brightness(0) invert(1); width: 150px; margin-bottom: 20px;">
-            <h2 style="margin:0">ИТ-Доступ</h2>
-            <input type="password" id="pass" placeholder="Пароль: 190407">
-            <button class="btn-action" onclick="unlock()">Авторизоваться</button>
+            <input type="password" id="pass" placeholder="Пароль">
+            <button class="btn-action" onclick="unlock()">Войти</button>
         </div>
     </div>
 
     <div id="main-ui">
-        <div class="sidebar">
-            <div class="tag" style="margin-bottom: 20px;">University OS</div>
-            <div style="font-weight: 700; font-size: 20px;">Политех <span style="color: var(--accent);">ИТ</span></div>
-            <nav style="margin-top: 40px; display: flex; flex-direction: column; gap: 15px;">
-                <div style="color: var(--accent); font-weight: bold;">● Главная</div>
-                <div style="opacity: 0.5;">○ Мои проекты</div>
-                <div style="opacity: 0.5;">○ База знаний</div>
+        <aside class="sidebar">
+            <div class="tag">University OS</div>
+            <h2>Политех ИТ</h2>
+            <nav style="margin-top: 20px; display: flex; flex-direction: column; gap: 15px;">
+                <div>● Главная</div>
+                <div style="opacity: 0.5;">○ Проекты</div>
             </nav>
-        </div>
+        </aside>
 
         <main class="dashboard">
-            <div class="header">
-                <div class="tag">Панель управления студента</div>
-                <h1>Кабинет группы 251-952</h1>
-            </div>
-
+            <h1>Кабинет 251-952</h1>
             <div class="grid">
-                <!-- ТРЕКЕР ЗАДАЧ -->
+                <!-- 1. ЗАДАЧИ -->
                 <div class="glass-card">
-                    <span class="tag">Успеваемость</span>
-                    <h3>Задачи семестра</h3>
-                    <div style="font-size: 24px; font-weight: 700;"><span id="perc-val">0</span>%</div>
-                    <div class="progress-track"><div class="progress-bar" id="fill"></div></div>
-                    
-                    <div id="task-list">
-                        <div class="task-item"><input type="checkbox" class="task"> Веб-технологии</div>
-                        <div class="task-item"><input type="checkbox" class="task"> Программирование</div>
-                        <div class="task-item"><input type="checkbox" class="task"> Высшая математика</div>
-                    </div>
-
-                    <div style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
-                        <input type="text" id="new-task-input" placeholder="Новая задача...">
-                        <button class="btn-action" style="background: #21262d;" onclick="addTask()">+ Добавить</button>
-                        <button class="btn-action" style="background: transparent; border: 1px solid var(--accent); color: var(--accent); font-size: 11px;" onclick="clearCompleted()">Удалить выполненные</button>
+                    <span class="tag">Задачи</span>
+                    <div id="task-list" style="margin-top: 15px;">
+                        <label><input type="checkbox" onchange="saveData()"> Веб-технологии</label><br>
+                        <label><input type="checkbox" onchange="saveData()"> Программирование</label>
                     </div>
                 </div>
 
-                <!-- РАЗДЕЛ: ПОСЕЩЕНИЕ -->
+                <!-- 2. ПОСЕЩЕНИЕ -->
                 <div class="glass-card">
-                    <span class="tag">Мониторинг</span>
-                    <h3>Посещение</h3>
+                    <span class="tag">Посещение</span>
                     <div class="stat-circle" id="attend-percent">100%</div>
-                    
-                    <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <span>Пропущено пар: <b id="missed-count" style="color: var(--accent)">0</b></span>
-                            <div style="display: flex; gap: 5px;">
-                                <button class="counter-btn" onclick="changeCounter('missed', -1)">-</button>
-                                <button class="counter-btn" onclick="changeCounter('missed', 1)">+</button>
-                            </div>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span>Уважительных: <b id="excused-count" style="color: var(--green)">0</b></span>
-                            <div style="display: flex; gap: 5px;">
-                                <button class="counter-btn" onclick="changeCounter('excused', -1)">-</button>
-                                <button class="counter-btn" onclick="changeCounter('excused', 1)">+</button>
-                            </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Пропуски: <b id="missed-val">0</b></span>
+                        <div>
+                            <button class="counter-btn" onclick="changeM(-1)">-</button>
+                            <button class="counter-btn" onclick="changeM(1)">+</button>
                         </div>
                     </div>
-                    <p style="font-size: 11px; margin-top: 15px; opacity: 0.5;">*Процент считается от 100 возможных пар в месяц.</p>
                 </div>
 
-                <!-- ТАЙМЕР -->
-                <div class="glass-card" id="timer-card">
+                <!-- 3. ТОЧНЫЙ ТАЙМЕР -->
+                <div class="glass-card">
                     <span class="tag">Временная шкала</span>
                     <h3>До сессии (01.06.2026)</h3>
-                    <div id="timer" style="font-size: 28px; font-weight: 800; color: var(--accent); margin: 15px 0;">...</div>
-                    <p style="font-size: 12px; opacity: 0.5;">Система мониторинга дедлайнов активна.</p>
+                    <div id="timer">Загрузка...</div>
+                    <p style="font-size: 12px; opacity: 0.5;">Расчет: Месяцы / Дни / Часы</p>
                 </div>
             </div>
         </main>
     </div>
 
     <script>
-        const audio = document.getElementById('bg-music');
-        let missed = 0;
-        let excused = 0;
+        let missed = localStorage.getItem('missed') ? parseInt(localStorage.getItem('missed')) : 0;
 
         function unlock() {
             if(document.getElementById('pass').value === '190407') {
-                document.getElementById('password-screen').style.opacity = '0';
-                audio.volume = 0.2;
-                audio.play().catch(() => {});
-                setTimeout(() => {
-                    document.getElementById('password-screen').style.display = 'none';
-                    document.getElementById('main-ui').style.display = 'flex';
-                    document.getElementById('music-btn').style.display = 'flex';
-                    startTimer();
-                }, 600);
-            } else { alert('Доступ запрещен!'); }
+                document.getElementById('password-screen').style.display = 'none';
+                document.getElementById('main-ui').style.display = 'flex';
+                updateAttend();
+                startTimer();
+            } else { alert('Ошибка'); }
         }
 
-        function toggleMusic() {
-            if (audio.paused) audio.play(); else audio.pause();
+        function changeM(v) {
+            missed = Math.max(0, missed + v);
+            localStorage.setItem('missed', missed);
+            updateAttend();
         }
 
-        // Посещаемость
-        function changeCounter(type, val) {
-            if (type === 'missed') {
-                missed = Math.max(0, missed + val);
-                document.getElementById('missed-count').innerText = missed;
-            } else {
-                excused = Math.max(0, excused + val);
-                document.getElementById('excused-count').innerText = excused;
-            }
-            updateAttendCircle();
-        }
-
-        function updateAttendCircle() {
-            const totalPairs = 100; // База для расчета
-            const realLoss = Math.max(0, missed - excused);
-            const percent = Math.round(((totalPairs - realLoss) / totalPairs) * 100);
-            const el = document.getElementById('attend-percent');
-            el.innerText = percent + "%";
-            el.style.color = percent > 80 ? 'var(--green)' : percent > 50 ? '#ffeb3b' : 'var(--accent)';
-            el.style.borderColor = el.style.color;
-        }
-
-        // Задачи
-        function updateProgress() {
-            const all = document.querySelectorAll('.task');
-            const checked = document.querySelectorAll('.task:checked');
-            const p = all.length > 0 ? Math.round((checked.length / all.length) * 100) : 0;
-            document.getElementById('fill').style.width = p + '%';
-            document.getElementById('perc-val').innerText = p;
-        }
-
-        function addTask() {
-            const input = document.getElementById('new-task-input');
-            if (input.value.trim() === "") return;
-            const div = document.createElement('div');
-            div.className = 'task-item';
-            div.innerHTML = `<input type="checkbox" class="task"> ${input.value}`;
-            document.getElementById('task-list').appendChild(div);
-            div.querySelector('input').addEventListener('change', updateProgress);
-            input.value = "";
-            updateProgress();
-        }
-
-        function clearCompleted() {
-            document.querySelectorAll('.task:checked').forEach(t => t.parentElement.remove());
-            updateProgress();
+        function updateAttend() {
+            document.getElementById('missed-val').innerText = missed;
+            let p = Math.max(0, 100 - missed * 2);
+            document.getElementById('attend-percent').innerText = p + '%';
         }
 
         function startTimer() {
-            const target = new Date('June 1, 2026 00:00:00').getTime();
+            const target = new Date('June 1, 2026 00:00:00');
+            
             setInterval(() => {
-                const now = new Date().getTime();
+                const now = new Date();
                 const diff = target - now;
-                const timerEl = document.getElementById('timer');
-                const cardEl = document.getElementById('timer-card');
-                if (diff > 0) {
-                    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-                    const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    timerEl.innerText = `${d} дн. ${h} ч.`;
-                    if (d < 10) cardEl.classList.add('urgent');
+
+                if (diff <= 0) {
+                    document.getElementById('timer').innerText = "Сессия началась!";
+                    return;
                 }
+
+                // Расчет месяцев, дней, часов
+                let months = (target.getFullYear() - now.getFullYear()) * 12 + (target.getMonth() - now.getMonth());
+                let tempDate = new Date(now);
+                tempDate.setMonth(now.getMonth() + months);
+                
+                if (tempDate > target) {
+                    months--;
+                    tempDate = new Date(now);
+                    tempDate.setMonth(now.getMonth() + months);
+                }
+
+                const days = Math.floor((target - tempDate) / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+
+                document.getElementById('timer').innerHTML = 
+                    `${months} мес. ${days} дн.<br>${hours} ч.`;
             }, 1000);
         }
-
-        document.querySelectorAll('.task').forEach(t => t.addEventListener('change', updateProgress));
-        document.getElementById('pass').addEventListener('keypress', (e) => { if(e.key === 'Enter') unlock(); });
     </script>
 </body>
 </html>
+
