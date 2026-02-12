@@ -4,113 +4,122 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Polytech OS | Группа 251-952</title>
-    <link rel="icon" href="https://mospolytech.ru" type="image/x-icon">
     <style>
         :root {
-            /* ОБНОВЛЕННЫЕ ЦВЕТА: ТЕМНО-СИНЯЯ ГАММА */
-            --bg: #0a192f; /* Глубокий темно-синий */
-            --card-bg: rgba(16, 33, 62, 0.8); /* Синеватый прозрачный для карточек */
+            --bg: #0a192f;
+            --card-bg: rgba(16, 33, 62, 0.8);
             --accent: #e30613;
             --text: #e6edf3;
-            --green: #4caf50;
             --yellow: #ffeb3b;
             --sidebar-bg: #071224;
         }
-        body { font-family: 'Inter', sans-serif; margin: 0; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; margin: 0; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; display: flex; }
         
-        /* ЭКРАН ПАРОЛЯ */
-        #password-screen { position: fixed; inset: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 10000; transition: 0.6s; }
-        .login-box { background: var(--card-bg); padding: 40px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); text-align: center; width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        #password-screen { position: fixed; inset: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 10000; transition: 0.5s; }
+        .login-box { background: var(--card-bg); padding: 40px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); text-align: center; width: 280px; }
         
-        #main-ui { display: none; width: 100%; }
-        .sidebar { width: 260px; background: var(--sidebar-bg); border-right: 1px solid rgba(255,255,255,0.05); padding: 30px 20px; display: flex; flex-direction: column; }
-        .dashboard { flex: 1; padding: 40px; overflow-y: auto; }
+        #main-ui { display: none; width: 100%; flex-direction: row; }
+        .sidebar { width: 260px; background: var(--sidebar-bg); border-right: 1px solid rgba(255,255,255,0.05); padding: 30px 20px; flex-shrink: 0; }
+        .dashboard { flex: 1; padding: 30px; overflow-y: auto; }
         
-        /* СЕТКА КАРТОЧЕК */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .glass-card { background: var(--card-bg); border-radius: 20px; padding: 25px; border: 1px solid rgba(255,255,255,0.05); height: fit-content; }
-        .full-width { grid-column: 1 / -1; }
+        /* СЕТКА С ОДИНАКОВЫМ РАЗМЕРОМ КАРТОЧЕК */
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 20px; 
+            grid-auto-rows: 1fr; /* Это делает все карточки в ряду одной высоты */
+        }
+        .glass-card { 
+            background: var(--card-bg); 
+            border-radius: 20px; 
+            padding: 25px; 
+            border: 1px solid rgba(255,255,255,0.05); 
+            display: flex; 
+            flex-direction: column;
+            justify-content: space-between; /* Содержимое распределяется равномерно */
+        }
+        .full-width { grid-column: 1 / -1; height: auto; }
 
-        .tag { font-size: 11px; text-transform: uppercase; color: var(--accent); font-weight: bold; letter-spacing: 1px; }
+        .tag { font-size: 11px; text-transform: uppercase; color: var(--accent); font-weight: bold; letter-spacing: 1px; margin-bottom: 10px; display: block; }
         
         /* РАСПИСАНИЕ */
-        .week-container { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; margin-top: 15px; }
-        .day-column { min-width: 250px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        .week-container { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; margin-top: 10px; }
+        .day-column { min-width: 220px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); }
         .day-name { color: var(--yellow); font-weight: bold; margin-bottom: 10px; display: block; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .sch-item { display: flex; justify-content: space-between; padding: 8px; border-radius: 8px; margin-bottom: 5px; font-size: 12px; background: rgba(255,255,255,0.03); }
-        .current-para { background: var(--accent) !important; box-shadow: 0 0 10px var(--accent); font-weight: bold; }
-        .today-day { border-color: var(--yellow); background: rgba(255, 235, 59, 0.05); }
+        .sch-item { display: flex; justify-content: space-between; padding: 6px; border-radius: 6px; margin-bottom: 5px; font-size: 11px; background: rgba(255,255,255,0.03); }
 
-        /* ПРОГРЕСС И КНОПКИ */
-        .progress-track { height: 6px; background: #1b2d4a; border-radius: 3px; margin: 10px 0; overflow: hidden; }
-        .progress-bar { height: 100%; background: var(--accent); width: 0%; transition: 1s; }
-        .btn-action { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: 600; margin-top: 10px; transition: 0.3s; }
-        .btn-action:hover { opacity: 0.8; transform: translateY(-2px); }
+        .progress-track { height: 6px; background: #1b2d4a; border-radius: 3px; margin: 15px 0; overflow: hidden; }
+        .progress-bar { height: 100%; background: var(--accent); width: 0%; transition: 0.8s; }
         
-        input { background: #0d1117; border: 1px solid #30363d; color: white; padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box; }
-        .counter-btn { background: #1b2d4a; color: white; border: none; width: 30px; height: 30px; border-radius: 5px; cursor: pointer; }
+        .btn-action { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: 600; margin-top: auto; }
+        input { background: #0d1117; border: 1px solid #30363d; color: white; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; font-size: 16px; } /* 16px предотвращает зум на iPhone */
 
-        @media (max-width: 768px) { body { flex-direction: column; } .sidebar { width: 100%; } .grid { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { 
+            #main-ui { flex-direction: column; } 
+            .sidebar { width: 100%; box-sizing: border-box; } 
+            .dashboard { padding: 15px; }
+            .grid { grid-auto-rows: auto; } /* На мобилках лучше оставить авто-высоту */
+        }
     </style>
 </head>
 <body>
 
     <div id="password-screen">
         <div class="login-box">
-            <h2 style="margin-top:0">Вход в систему</h2>
-            <input type="password" id="pass" placeholder="Пароль: 190407">
-            <button class="btn-action" onclick="unlock()">Войти</button>
+            <h2 style="margin-bottom: 20px;">Polytech OS</h2>
+            <input type="password" id="pass" placeholder="Пароль: 190407" inputmode="numeric">
+            <button class="btn-action" onclick="unlock()" style="margin-top: 20px;">Войти</button>
         </div>
     </div>
 
     <div id="main-ui">
         <aside class="sidebar">
-            <div class="tag">University OS</div>
-            <h2>Политех <span style="color:var(--accent)">ИТ</span></h2>
-            <nav style="display:flex; flex-direction:column; gap:12px; opacity:0.7;">
-                <div>● Личный кабинет</div>
-                <div>○ Проекты группы</div>
-            </nav>
+            <div class="tag">University</div>
+            <h2 style="margin: 5px 0">Политех <span style="color:var(--accent)">ИТ</span></h2>
         </aside>
 
         <main class="dashboard">
-            <h1>Кабинет студента 251-952</h1>
-            
             <div class="grid">
+                <!-- 1. РАСПИСАНИЕ -->
                 <div class="glass-card full-width">
-                    <span class="tag">Учебный план на неделю</span>
+                    <span class="tag">Расписание</span>
                     <div class="week-container" id="week-schedule"></div>
                 </div>
 
+                <!-- 2. ТРЕКЕР -->
                 <div class="glass-card">
-                    <span class="tag">Трекер</span>
-                    <h3>Задачи (<span id="perc-val">0</span>%)</h3>
-                    <div class="progress-track"><div class="progress-bar" id="fill"></div></div>
-                    <div id="task-list">
-                        <label style="display:flex; gap:8px; font-size:13px; margin-bottom:5px;"><input type="checkbox" class="task" onchange="updateProgress()"> Веб-технологии</label>
-                        <label style="display:flex; gap:8px; font-size:13px; margin-bottom:5px;"><input type="checkbox" class="task" onchange="updateProgress()"> Программирование</label>
-                    </div>
-                    <input type="text" id="new-task" placeholder="Новая задача..." style="margin-top:10px;">
-                    <button class="btn-action" onclick="addTask()">Добавить</button>
-                </div>
-
-                <div class="glass-card">
-                    <span class="tag">Дисциплина</span>
-                    <h3>Пропуски занятий</h3>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-                        <span>Количество: <b id="m-count" style="color:var(--accent)">0</b></span>
-                        <div style="display: flex; gap: 5px;">
-                            <button class="counter-btn" onclick="changeM(-1)">-</button>
-                            <button class="counter-btn" onclick="changeM(1)">+</button>
+                    <div>
+                        <span class="tag">Задачи</span>
+                        <h3 style="margin:0">Прогресс <span id="perc-val">0</span>%</h3>
+                        <div class="progress-track"><div class="progress-bar" id="fill"></div></div>
+                        <div id="task-list">
+                            <label style="display:flex; gap:8px; font-size:13px; margin-bottom:8px;"><input type="checkbox" class="task" onchange="updateProgress()"> Программирование</label>
                         </div>
                     </div>
+                    <button class="btn-action" onclick="addTask()">+ Добавить</button>
                 </div>
 
+                <!-- 3. ДИСЦИПЛИНА -->
                 <div class="glass-card">
-                    <span class="tag">Обратный отсчет</span>
-                    <h3>До 01.06.2026</h3>
-                    <div id="timer" style="font-size: 20px; font-weight: bold; color:var(--accent); margin:15px 0;">...</div>
-                    <a href="https://lk.mospolytech.ru" target="_blank" class="btn-action" style="text-decoration:none; display:block; text-align:center;">В Личный Кабинет</a>
+                    <div>
+                        <span class="tag">Дисциплина</span>
+                        <h3 style="margin:0">Пропуски</h3>
+                        <div style="font-size: 40px; font-weight: bold; text-align: center; margin: 20px 0; color: var(--accent);" id="m-count">0</div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-action" style="background:#21262d" onclick="changeM(-1)">-</button>
+                        <button class="btn-action" onclick="changeM(1)">+</button>
+                    </div>
+                </div>
+
+                <!-- 4. ТАЙМЕР -->
+                <div class="glass-card">
+                    <div>
+                        <span class="tag">Обратный отсчет</span>
+                        <h3 style="margin:0">До конца семестра</h3>
+                        <div id="timer" style="font-size: 18px; font-weight: bold; color:var(--accent); margin:25px 0; text-align: center;">...</div>
+                    </div>
+                    <a href="https://lk.mospolytech.ru" target="_blank" style="text-decoration:none;"><button class="btn-action">В личный кабинет</button></a>
                 </div>
             </div>
         </main>
@@ -118,87 +127,72 @@
 
     <script>
         const weekData = {
-            1: { n: "Пн", p: [{t: "12:20-13:50", n: "Проектная деят. (Пр)"}] },
-            2: { n: "Вт", p: [{t: "09:00-10:30", n: "Языки прогр. (Лаб)"},{t: "10:40-12:10", n: "Языки прогр. (Лаб)"},{t: "12:20-13:50", n: "Иностр. язык (Пр)"}] },
-            3: { n: "Ср", p: [{t: "09:00-10:30", n: "Мат. анализ (Лек)"},{t: "10:40-12:10", n: "Теор. вероятн. (Пр)"},{t: "12:20-13:50", n: "Мат. анализ (Пр)"}] },
-            4: { n: "Чт", p: [{t: "10:40-12:10", n: "Технол. прогр. (Лаб)"},{t: "12:20-13:50", n: "Сети / БД (Лаб)"},{t: "14:30-16:00", n: "Сети / БД (Лаб)"}] },
-            5: { n: "Пт", p: [{t: "09:00-10:30", n: "Технол. прогр. (Лек)"},{t: "10:40-12:10", n: "Тех. тексты (Лек)"},{t: "12:20-13:50", n: "Теор. вероятн. (Лек)"},{t: "14:30-16:00", n: "Языки прогр. (Лек)"}] },
-            6: { n: "Сб", p: [{t: "10:40-12:10", n: "Физкультура (Пр)"},{t: "12:20-13:50", n: "Базы данных (Лек)"},{t: "14:30-16:00", n: "Сети и системы (Лек)"}] }
+            1: { n: "Пн", p: [{t: "12:20", n: "Проектная"}] },
+            2: { n: "Вт", p: [{t: "09:00", n: "Языки прогр."},{t: "12:20", n: "Иностр. яз"}] },
+            3: { n: "Ср", p: [{t: "09:00", n: "Мат. анализ"}] },
+            4: { n: "Чт", p: [{t: "10:40", n: "Технол. прогр."}] },
+            5: { n: "Пт", p: [{t: "09:00", n: "Физкультура"}] },
+            6: { n: "Сб", p: [{t: "12:20", n: "Базы данных"}] }
         };
 
-        let missed = 0;
-
-        // ИСПРАВЛЕННАЯ ФУНКЦИЯ РАЗБЛОКИРОВКИ
         function unlock() {
-            const passInput = document.getElementById('pass').value;
-            if(passInput === '190407') {
+            const pass = document.getElementById('pass').value;
+            if(pass === '190407') {
                 document.getElementById('password-screen').style.opacity = '0';
                 setTimeout(() => {
                     document.getElementById('password-screen').style.display = 'none';
-                    document.getElementById('main-ui').style.display = 'flex';
+                    document.getElementById('main-ui').style.display = 'flex'; // Для корректного отображения flex-блоков
                     renderSchedule();
                     startTimer();
-                }, 600);
+                }, 500);
             } else {
-                alert('Неверный пароль');
+                alert('Ошибка');
             }
         }
 
         function renderSchedule() {
             const container = document.getElementById('week-schedule');
-            const today = new Date().getDay();
-            
+            container.innerHTML = '';
             for (let dayNum in weekData) {
                 const day = weekData[dayNum];
                 const dayDiv = document.createElement('div');
-                dayDiv.className = `day-column ${dayNum == today ? 'today-day' : ''}`;
-                
-                let lessonsHtml = `<span class="day-name">${day.n}</span>`;
+                dayDiv.className = 'day-column';
+                let html = `<span class="day-name">${day.n}</span>`;
                 day.p.forEach(para => {
-                    lessonsHtml += `
-                        <div class="sch-item">
-                            <span style="opacity:0.6">${para.t}</span>
-                            <span>${para.n}</span>
-                        </div>`;
+                    html += `<div class="sch-item"><span>${para.t}</span><b>${para.n}</b></div>`;
                 });
-                
-                dayDiv.innerHTML = lessonsHtml;
+                dayDiv.innerHTML = html;
                 container.appendChild(dayDiv);
             }
         }
 
+        let missed = 0;
+        function changeM(v) { missed = Math.max(0, missed + v); document.getElementById('m-count').innerText = missed; }
+
         function updateProgress() {
             const tasks = document.querySelectorAll('.task');
             const done = Array.from(tasks).filter(t => t.checked).length;
-            const perc = tasks.length > 0 ? Math.round((done / tasks.length) * 100) : 0;
+            const perc = tasks.length ? Math.round((done/tasks.length)*100) : 0;
             document.getElementById('fill').style.width = perc + '%';
             document.getElementById('perc-val').innerText = perc;
         }
 
         function addTask() {
-            const val = document.getElementById('new-task').value;
-            if (!val) return;
-            const div = document.createElement('label');
-            div.style = "display:flex; gap:8px; font-size:13px; margin-bottom:5px;";
-            div.innerHTML = `<input type="checkbox" class="task" onchange="updateProgress()"> ${val}`;
-            document.getElementById('task-list').appendChild(div);
-            document.getElementById('new-task').value = '';
+            const val = prompt("Введите задачу:");
+            if(!val) return;
+            const label = document.createElement('label');
+            label.style = "display:flex; gap:8px; font-size:13px; margin-bottom:8px;";
+            label.innerHTML = `<input type="checkbox" class="task" onchange="updateProgress()"> ${val}`;
+            document.getElementById('task-list').appendChild(label);
             updateProgress();
         }
 
-        function changeM(val) {
-            missed = Math.max(0, missed + val);
-            document.getElementById('m-count').innerText = missed;
-        }
-
         function startTimer() {
-            const target = new Date("June 1, 2026 00:00:00").getTime();
+            const target = new Date("June 1, 2026").getTime();
             setInterval(() => {
-                const now = new Date().getTime();
-                const diff = target - now;
-                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                document.getElementById('timer').innerText = `${days}д ${hours}ч до сессии`;
+                const diff = target - new Date().getTime();
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                document.getElementById('timer').innerText = d + " дней до цели";
             }, 1000);
         }
     </script>
