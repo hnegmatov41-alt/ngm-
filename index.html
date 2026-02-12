@@ -6,16 +6,26 @@
     <title>Polytech OS | Группа 251-952</title>
     <style>
         :root {
-            --bg: #0a192f;
-            --card-bg: rgba(16, 33, 62, 0.8);
+            /* КЛАССИЧЕСКИЙ ТЕМНО-СИНИЙ ГРАДИЕНТНЫЙ ФОН */
+            --bg: radial-gradient(circle at center, #102a43 0%, #0a192f 100%);
+            --card-bg: rgba(16, 33, 62, 0.85);
             --accent: #e30613;
             --text: #e6edf3;
             --yellow: #ffeb3b;
             --sidebar-bg: #071224;
+            --today-border: #ffeb3b;
         }
-        body { font-family: 'Inter', sans-serif; margin: 0; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            background: var(--bg); 
+            background-attachment: fixed;
+            color: var(--text); 
+            min-height: 100vh; 
+            display: flex; 
+        }
         
-        #password-screen { position: fixed; inset: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 10000; }
+        #password-screen { position: fixed; inset: 0; background: #0a192f; display: flex; justify-content: center; align-items: center; z-index: 10000; }
         .login-box { background: var(--card-bg); padding: 40px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); text-align: center; width: 280px; }
         
         #main-ui { display: none; width: 100%; flex-direction: row; }
@@ -42,7 +52,11 @@
         .tag { font-size: 11px; text-transform: uppercase; color: var(--accent); font-weight: bold; letter-spacing: 1px; margin-bottom: 10px; display: block; }
         
         .week-container { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; }
-        .day-column { min-width: 250px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        
+        /* СТИЛЬ ДЛЯ ТЕКУЩЕГО ДНЯ */
+        .day-column { min-width: 250px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
+        .day-column.today { border: 1px solid var(--today-border); background: rgba(255, 235, 59, 0.05); transform: translateY(-5px); }
+        
         .day-name { color: var(--yellow); font-weight: bold; margin-bottom: 10px; display: block; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .sch-item { display: flex; justify-content: space-between; padding: 8px; border-radius: 8px; margin-bottom: 5px; font-size: 11px; background: rgba(255,255,255,0.03); }
 
@@ -84,7 +98,6 @@
                     <div class="week-container" id="week-schedule"></div>
                 </div>
 
-                <!-- ТРЕКЕР ЗАДАЧ -->
                 <div class="glass-card">
                     <div>
                         <span class="tag">Трекер</span>
@@ -98,7 +111,6 @@
                     </div>
                 </div>
 
-                <!-- ДИСЦИПЛИНА -->
                 <div class="glass-card">
                     <div>
                         <span class="tag">Дисциплина</span>
@@ -111,7 +123,6 @@
                     </div>
                 </div>
 
-                <!-- ОБРАТНЫЙ ОТСЧЕТ -->
                 <div class="glass-card">
                     <div>
                         <span class="tag">Обратный отсчет</span>
@@ -135,7 +146,7 @@
         };
 
         let missed = parseInt(localStorage.getItem('missed')) || 0;
-        let tasks = JSON.parse(localStorage.getItem('tasks')) || [{n: "Программирование", d: false}];
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
 
         function unlock() {
             if(document.getElementById('pass').value === '190407') {
@@ -151,9 +162,15 @@
         function renderSchedule() {
             const container = document.getElementById('week-schedule');
             container.innerHTML = '';
+            
+            // Получаем текущий день (1-Пн, 2-Вт... 0-Вс)
+            const today = new Date().getDay();
+
             for (let d in weekData) {
                 const day = weekData[d];
-                let html = `<div class="day-column"><span class="day-name">${day.n}</span>`;
+                // Добавляем класс 'today', если день совпадает с текущим
+                let html = `<div class="day-column ${d == today ? 'today' : ''}">
+                            <span class="day-name">${day.n} ${d == today ? '(Сегодня)' : ''}</span>`;
                 day.p.forEach(p => {
                     html += `<div class="sch-item"><span style="opacity:0.6">${p.t}</span><b>${p.n}</b></div>`;
                 });
@@ -167,7 +184,7 @@
             list.innerHTML = '';
             tasks.forEach((t, i) => {
                 const label = document.createElement('label');
-                label.style = "display:flex; gap:8px; font-size:13px; margin-bottom:8px; align-items:center; cursor:pointer;";
+                label.style = "display:flex; gap:8px; font-size:13px; margin-bottom:8px; align-items:center;";
                 label.innerHTML = `<input type="checkbox" class="task" ${t.d ? 'checked' : ''} onchange="toggleTask(${i})"> 
                                    <span style="${t.d ? 'text-decoration:line-through; opacity:0.5' : ''}">${t.n}</span>`;
                 list.appendChild(label);
@@ -177,19 +194,12 @@
         }
 
         function addTask() {
-            const val = prompt("Название задачи:");
+            const val = prompt("Задача:");
             if(val) { tasks.push({n: val, d: false}); renderTasks(); }
         }
 
-        function toggleTask(i) {
-            tasks[i].d = !tasks[i].d;
-            renderTasks();
-        }
-
-        function clearDone() {
-            tasks = tasks.filter(t => !t.d);
-            renderTasks();
-        }
+        function toggleTask(i) { tasks[i].d = !tasks[i].d; renderTasks(); }
+        function clearDone() { tasks = tasks.filter(t => !t.d); renderTasks(); }
 
         function updateProgress() {
             const done = tasks.filter(t => t.d).length;
@@ -216,7 +226,6 @@
     </script>
 </body>
 </html>
-
 
 
 
