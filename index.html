@@ -1,59 +1,186 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система Политех | Группа 251-952</title>
+    <style>
+        :root {
+            --bg: #0b0e14;
+            --card-bg: rgba(23, 27, 34, 0.8);
+            --accent: #e30613;
+            --accent-glow: rgba(227, 6, 19, 0.3);
+            --text: #e6edf3;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            margin: 0; background: var(--bg); color: var(--text);
+            display: flex; min-height: 100vh; overflow: hidden;
+        }
+
+        /* АВТОРИЗАЦИЯ */
+        #password-screen {
+            position: fixed; inset: 0; background: var(--bg);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 10000; transition: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .login-box {
+            background: var(--card-bg); padding: 40px; border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.1); text-align: center; width: 300px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        /* ОСНОВНОЙ ИНТЕРФЕЙС */
+        #main-ui { display: none; width: 100%; height: 100vh; }
+
+        /* САЙДБАР */
+        .sidebar {
+            width: 260px; background: rgba(13, 17, 23, 0.9);
+            border-right: 1px solid rgba(255,255,255,0.05);
+            padding: 30px 20px; display: flex; flex-direction: column;
+        }
+
+        /* КОНТЕНТНАЯ ОБЛАСТЬ */
+        .dashboard {
+            flex: 1; padding: 40px; overflow-y: auto;
+            background: radial-gradient(circle at top right, rgba(227,6,19,0.05), transparent);
+        }
+
+        .header { margin-bottom: 40px; }
+        .header h1 { font-size: 24px; margin: 0; font-weight: 600; }
+
+        .grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .glass-card {
+            background: var(--card-bg); border-radius: 20px; padding: 25px;
+            border: 1px solid rgba(255,255,255,0.05); position: relative;
+            transition: 0.3s;
+        }
+        .glass-card:hover {
+            border-color: var(--accent); transform: translateY(-5px);
+            box-shadow: 0 10px 30px var(--accent-glow);
+        }
+
+        /* ИНДИКАТОРЫ */
+        .progress-track { height: 6px; background: #21262d; border-radius: 3px; margin: 15px 0; }
+        .progress-bar { height: 100%; background: var(--accent); border-radius: 3px; width: 0%; transition: 1s; }
+
+        .btn-action {
+            background: var(--accent); color: white; border: none; padding: 12px;
+            border-radius: 12px; cursor: pointer; width: 100%; font-weight: 600;
+            text-decoration: none; display: block; text-align: center; margin-top: 15px;
+        }
+
+        input {
+            background: #0d1117; border: 1px solid #30363d; color: white;
+            padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; margin: 15px 0;
+        }
+
+        .tag { font-size: 11px; text-transform: uppercase; color: var(--accent); font-weight: bold; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+
+    <!-- ВХОД -->
+    <div id="password-screen">
+        <div class="login-box">
+            <img src="https://mospolytech.ru" style="filter: brightness(0) invert(1); width: 150px; margin-bottom: 20px;">
+            <h2 style="margin:0">Вход в систему</h2>
+            <input type="password" id="pass" placeholder="Введите пароль">
+            <button class="btn-action" onclick="unlock()">Авторизоваться</button>
+        </div>
+    </div>
+
+    <!-- ИНТЕРФЕЙС ЛК -->
+    <div id="main-ui">
+        <div class="sidebar">
+            <div class="tag" style="margin-bottom: 20px;">Университетская ОС</div>
+            <div style="font-weight: 700; font-size: 20px;">Московский <span style="color: var(--accent);">Политех</span></div>
+            <nav style="margin-top: 40px; display: flex; flex-direction: column; gap: 15px;">
+                <div style="color: var(--accent); font-weight: bold; cursor: pointer;">● Главная панель</div>
+                <div style="opacity: 0.5; cursor: pointer;">○ Проекты</div>
+                <div style="opacity: 0.5; cursor: pointer;">○ Задачи</div>
+                <div style="opacity: 0.5; cursor: pointer;">○ Настройки</div>
+            </nav>
+        </div>
+
+        <main class="dashboard">
+            <div class="header">
+                <div class="tag">С возвращением, Разработчик</div>
+                <h1>Личный кабинет студента 251-952</h1>
+            </div>
+
+            <div class="grid">
+                <!-- КАРТОЧКА ПРОГРЕССА -->
+                <div class="glass-card">
+                    <span class="tag">Успеваемость</span>
+                    <h3>Цели семестра</h3>
+                    <div style="font-size: 24px; font-weight: 700; margin: 10px 0;"><span id="perc-val">0</span>%</div>
+                    <div class="progress-track"><div class="progress-bar" id="fill"></div></div>
+                    <label style="display: flex; gap: 10px; margin: 10px 0; font-size: 14px; cursor: pointer;">
+                        <input type="checkbox" class="task" style="width: auto; margin: 0;"> Закрыть все дедлайны
+                    </label>
+                    <label style="display: flex; gap: 10px; margin: 10px 0; font-size: 14px; cursor: pointer;">
+                        <input type="checkbox" class="task" style="width: auto; margin: 0;"> Проект на GitHub
+                    </label>
+                </div>
+
+                <!-- КАРТОЧКА ИНСТРУМЕНТОВ -->
+                <div class="glass-card">
+                    <span class="tag">Связь</span>
+                    <h3>Сервисы Политеха</h3>
+                    <p style="font-size: 14px; opacity: 0.6;">Быстрый доступ к официальным ресурсам университета.</p>
+                    <a href="https://lk.mospolytech.ru" target="_blank" class="btn-action">Открыть Личный Кабинет</a>
+                    <a href="https://mospolytech.ru" target="_blank" style="color: white; font-size: 12px; display: block; text-align: center; margin-top: 15px; opacity: 0.5;">Официальный сайт</a>
+                </div>
+
+                <!-- КАРТОЧКА ТАЙМЕРА -->
+                <div class="glass-card">
+                    <span class="tag">Временная шкала</span>
+                    <h3>До сессии осталось</h3>
+                    <div id="timer" style="font-size: 32px; font-weight: 800; margin: 15px 0; color: var(--accent);">...</div>
+                    <div style="font-size: 12px; opacity: 0.5;">Готовьтесь к экзаменам заранее!</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
     <script>
         function unlock() {
             if(document.getElementById('pass').value === '190407') {
                 document.getElementById('password-screen').style.opacity = '0';
+                document.getElementById('password-screen').style.transform = 'scale(1.1)';
                 setTimeout(() => {
                     document.getElementById('password-screen').style.display = 'none';
                     document.getElementById('main-ui').style.display = 'flex';
                 }, 600);
-            } else { alert('Ошибка доступа'); }
+            } else { alert('Доступ запрещен'); }
         }
 
-        function updateProgress() {
-            const all = document.querySelectorAll('.task');
-            const checked = document.querySelectorAll('.task:checked');
-            const p = all.length > 0 ? Math.round((checked.length / all.length) * 100) : 0;
+        const tasks = document.querySelectorAll('.task');
+        tasks.forEach(t => t.addEventListener('change', () => {
+            const p = Math.round(([...tasks].filter(i => i.checked).length / tasks.length) * 100);
             document.getElementById('fill').style.width = p + '%';
             document.getElementById('perc-val').innerText = p;
-        }
+        }));
 
-        function addTask() {
-            const input = document.getElementById('new-task-input');
-            if (input.value.trim() === "") return;
-            
-            const div = document.createElement('div');
-            div.className = 'task-item';
-            div.innerHTML = `<input type="checkbox" class="task"> <span>${input.value}</span>`;
-            document.getElementById('task-list').appendChild(div);
-            
-            div.querySelector('input').addEventListener('change', updateProgress);
-            input.value = "";
-            updateProgress();
-        }
-
-        // Функция для удаления выполненных задач
-        function clearCompleted() {
-            const checked = document.querySelectorAll('.task:checked');
-            checked.forEach(task => task.parentElement.remove());
-            updateProgress();
-        }
-
-        document.querySelectorAll('.task').forEach(t => t.addEventListener('change', updateProgress));
-
-        // ИСПРАВЛЕННЫЙ ТАЙМЕР (на 2025 год)
         function startTimer() {
-            const session = new Date('June 1, 2025').getTime(); // Установлена актуальная дата
+            const session = new Date('June 1, 2024').getTime();
             setInterval(() => {
                 const now = new Date().getTime();
                 const diff = session - now;
-                
-                if (diff > 0) {
-                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                    document.getElementById('timer').innerText = days + " дн.";
-                } else {
-                    document.getElementById('timer').innerText = "Сессия идет! 🔥";
-                }
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                document.getElementById('timer').innerText = d > 0 ? d + " дн." : "Началась";
             }, 1000);
         }
         startTimer();
+
+        document.getElementById('pass').addEventListener('keypress', (e) => { if(e.key === 'Enter') unlock(); });
     </script>
+</body>
+</html>
+
