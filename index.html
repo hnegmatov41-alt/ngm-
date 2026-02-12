@@ -34,15 +34,18 @@
         .day-column.today { border: 1px solid var(--today-border); background: rgba(255, 235, 59, 0.05); }
         
         .day-name { color: var(--yellow); font-weight: bold; margin-bottom: 10px; display: block; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .sch-item { display: flex; justify-content: space-between; padding: 8px; border-radius: 8px; margin-bottom: 5px; font-size: 11px; background: rgba(255,255,255,0.03); }
+        .sch-item { display: flex; justify-content: space-between; padding: 8px; border-radius: 8px; margin-bottom: 5px; font-size: 11px; background: rgba(255,255,255,0.03); color: var(--text); }
         .current-para { background: var(--accent) !important; color: white !important; box-shadow: 0 0 10px var(--accent); font-weight: bold; }
 
         .progress-track { height: 6px; background: #1b2d4a; border-radius: 3px; margin: 10px 0; overflow: hidden; }
         .progress-bar { height: 100%; background: var(--accent); width: 0%; transition: 0.8s; }
         
         .btn-action { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: 600; margin-top: 10px; }
-        .btn-secondary { background: #21262d; margin-top: 5px; font-size: 11px; padding: 8px; opacity: 0.7; }
+        .btn-secondary { background: #21262d; margin-top: 5px; font-size: 11px; padding: 8px; opacity: 0.7; color: white; border: none; border-radius: 8px; cursor: pointer; width: 100%; }
         input { background: #0d1117; border: 1px solid #30363d; color: white; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; font-size: 16px; }
+
+        /* СТИЛЬ ЗАДАЧ */
+        #task-list label { color: var(--text); display: flex; gap: 10px; align-items: center; margin-bottom: 10px; cursor: pointer; }
 
         @media (max-width: 768px) { #main-ui { flex-direction: column; } .sidebar { width: 100%; } .grid { grid-auto-rows: auto; } }
     </style>
@@ -75,11 +78,11 @@
                     <span class="tag">Трекер</span>
                     <h3 style="margin:0">Задачи (<span id="perc-val">0</span>%)</h3>
                     <div class="progress-track"><div class="progress-bar" id="fill"></div></div>
-                    <div id="task-list" style="max-height: 120px; overflow-y: auto;"></div>
+                    <div id="task-list" style="max-height: 150px; overflow-y: auto; padding-right: 5px;"></div>
                 </div>
                 <div>
                     <button class="btn-action" onclick="addTask()">+ Добавить</button>
-                    <button class="btn-action btn-secondary" onclick="clearDone()">Очистить готовые</button>
+                    <button class="btn-secondary" onclick="clearDone()">Очистить готовые</button>
                 </div>
             </div>
 
@@ -124,7 +127,7 @@
             document.getElementById('password-screen').style.display = 'none';
             document.getElementById('main-ui').style.display = 'flex';
             init();
-        } else { alert('Ошибка'); }
+        } else { alert('Неверный код'); }
     }
 
     function init() {
@@ -160,17 +163,16 @@
         const now = new Date();
         const today = now.getDay();
         const currentMins = now.getHours() * 60 + now.getMinutes();
-        let currentLesson = "Сейчас нет пар";
-
+        let lesson = "Сейчас нет пар";
         if (weekData[today]) {
             weekData[today].p.forEach(p => {
                 const [start, end] = p.t.split('-');
                 const [sH, sM] = start.split(':').map(Number);
                 const [eH, eM] = end.split(':').map(Number);
-                if (currentMins >= (sH*60+sM) && currentMins <= (eH*60+eM)) currentLesson = "Идет пара: " + p.n;
+                if (currentMins >= (sH*60+sM) && currentMins <= (eH*60+eM)) lesson = "Идет пара: " + p.n;
             });
         }
-        alert(currentLesson);
+        alert(lesson);
     }
 
     let missed = 0;
@@ -178,7 +180,13 @@
 
     function loadData() {
         missed = parseInt(localStorage.getItem('missed')) || 0;
-        tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        // Если в памяти нет задач, добавляем стандартные
+        const savedTasks = localStorage.getItem('tasks');
+        if (savedTasks) {
+            tasks = JSON.parse(savedTasks);
+        } else {
+            tasks = [{n: "Веб-технологии", d: false}, {n: "Программирование", d: false}];
+        }
         document.getElementById('m-count').innerText = missed;
         renderTasks();
     }
@@ -188,7 +196,6 @@
         list.innerHTML = '';
         tasks.forEach((t, i) => {
             const label = document.createElement('label');
-            label.style = "display:flex; gap:8px; font-size:13px; margin-bottom:8px; align-items:center;";
             label.innerHTML = `<input type="checkbox" ${t.d ? 'checked' : ''} onchange="toggleTask(${i})"> 
                                <span style="${t.d ? 'text-decoration:line-through; opacity:0.5' : ''}">${t.n}</span>`;
             list.appendChild(label);
@@ -203,17 +210,20 @@
     }
     function toggleTask(i) { tasks[i].d = !tasks[i].d; renderTasks(); }
     function clearDone() { tasks = tasks.filter(t => !t.d); renderTasks(); }
+    
     function updateProgress() {
         const done = tasks.filter(t => t.d).length;
         const perc = tasks.length ? Math.round((done/tasks.length)*100) : 0;
         document.getElementById('fill').style.width = perc + '%';
         document.getElementById('perc-val').innerText = perc;
     }
+    
     function changeM(v) {
         missed = Math.max(0, missed + v);
         document.getElementById('m-count').innerText = missed;
         localStorage.setItem('missed', missed);
     }
+    
     function startTimer() {
         const target = new Date("June 1, 2026").getTime();
         setInterval(() => {
@@ -228,4 +238,6 @@
 </body>
 </html>
 
-
+    
+    
+     
