@@ -96,10 +96,6 @@
 </head>
 <body>
 
-    <audio id="bg-music" loop>
-        <source src="https://www.soundhelix.com" type="audio/mpeg">
-    </audio>
-
     <div id="password-screen">
         <div class="login-box">
             <img src="https://mospolytech.ru" style="filter: brightness(0) invert(1); width: 150px; margin-bottom: 20px;">
@@ -116,7 +112,6 @@
             <nav style="margin-top: 40px; display: flex; flex-direction: column; gap: 15px;">
                 <div style="color: var(--accent); font-weight: bold;">● Главная</div>
                 <div style="opacity: 0.5;">○ Мои проекты</div>
-                <div style="opacity: 0.5;">○ База знаний</div>
             </nav>
         </div>
 
@@ -127,17 +122,26 @@
             </div>
 
             <div class="grid">
+                <!-- 1. ЗАДАЧИ СЕМЕСТРА -->
                 <div class="glass-card">
                     <span class="tag">Успеваемость</span>
                     <h3>Задачи семестра</h3>
                     <div style="font-size: 24px; font-weight: 700;"><span id="perc-val">0</span>%</div>
                     <div class="progress-track"><div class="progress-bar" id="fill"></div></div>
+                    
                     <div id="task-list">
-                        <div class="task-item"><input type="checkbox" class="task"> Веб-технологии</div>
-                        <div class="task-item"><input type="checkbox" class="task"> Программирование</div>
+                        <div class="task-item"><input type="checkbox" class="task" onchange="updateProgress()"> Веб-технологии</div>
+                        <div class="task-item"><input type="checkbox" class="task" onchange="updateProgress()"> Программирование</div>
+                    </div>
+
+                    <div style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                        <input type="text" id="new-task-input" placeholder="Новая задача...">
+                        <button class="btn-action" style="background: #21262d;" onclick="addTask()">+ Добавить</button>
+                        <button class="btn-action" style="background: transparent; border: 1px solid var(--accent); color: var(--accent); font-size: 11px;" onclick="clearCompleted()">Удалить выполненные</button>
                     </div>
                 </div>
 
+                <!-- 2. ПОСЕЩЕНИЕ -->
                 <div class="glass-card">
                     <span class="tag">Мониторинг</span>
                     <h3>Посещение</h3>
@@ -151,10 +155,11 @@
                     </div>
                 </div>
 
+                <!-- 3. ТАЙМЕР -->
                 <div class="glass-card" id="timer-card">
                     <span class="tag">Временная шкала</span>
                     <h3>До сессии (01.06.2026)</h3>
-                    <div id="timer" style="font-size: 24px; font-weight: 800; color: var(--accent); margin: 15px 0;">Загрузка...</div>
+                    <div id="timer" style="font-size: 22px; font-weight: 800; color: var(--accent); margin: 15px 0;">Загрузка...</div>
                     <p style="font-size: 11px; opacity: 0.5;">Расчет по месяцам и дням.</p>
                 </div>
             </div>
@@ -163,14 +168,42 @@
 
     <script>
         let missed = 0;
+
         function unlock() {
             if(document.getElementById('pass').value === '190407') {
                 document.getElementById('password-screen').style.display = 'none';
                 document.getElementById('main-ui').style.display = 'flex';
                 startTimer();
+                updateProgress(); // Считаем начальные %
             } else { alert('Доступ закрыт!'); }
         }
 
+        // Логика задач
+        function updateProgress() {
+            const all = document.querySelectorAll('.task');
+            const checked = document.querySelectorAll('.task:checked');
+            const p = all.length > 0 ? Math.round((checked.length / all.length) * 100) : 0;
+            document.getElementById('fill').style.width = p + '%';
+            document.getElementById('perc-val').innerText = p;
+        }
+
+        function addTask() {
+            const input = document.getElementById('new-task-input');
+            if (input.value.trim() === "") return;
+            const div = document.createElement('div');
+            div.className = 'task-item';
+            div.innerHTML = `<input type="checkbox" class="task" onchange="updateProgress()"> ${input.value}`;
+            document.getElementById('task-list').appendChild(div);
+            input.value = "";
+            updateProgress();
+        }
+
+        function clearCompleted() {
+            document.querySelectorAll('.task:checked').forEach(t => t.parentElement.remove());
+            updateProgress();
+        }
+
+        // Посещаемость
         function changeCounter(v) {
             missed = Math.max(0, missed + v);
             document.getElementById('missed-count').innerText = missed;
@@ -178,6 +211,7 @@
             document.getElementById('attend-percent').innerText = p + '%';
         }
 
+        // Таймер
         function startTimer() {
             const target = new Date('June 1, 2026 00:00:00').getTime();
             setInterval(() => {
@@ -185,7 +219,7 @@
                 const diff = target - now.getTime();
                 
                 const dTotal = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const months = Math.floor(dTotal / 30.44); // Среднее кол-во дней в месяце
+                const months = Math.floor(dTotal / 30.44); 
                 const days = Math.floor(dTotal % 30.44);
                 const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
 
@@ -194,6 +228,8 @@
                 if (dTotal < 10) document.getElementById('timer-card').classList.add('urgent');
             }, 1000);
         }
+
+        document.getElementById('pass').addEventListener('keypress', (e) => { if(e.key === 'Enter') unlock(); });
     </script>
 </body>
 </html>
